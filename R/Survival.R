@@ -23,9 +23,9 @@ Cox_PH<-function(clinical_dat, cov, EQMI_dat, degree = 1)
   for(i in 1:p){
     surv = surv_full[,c(1:(n_cov+3),(i+4))]
     colnames(surv)[(n_cov+4)] = "QMI"
-    res.cox_noQMI<-coxph(Surv(`Time`,Censored) ~ surv[,c(4:(n_cov+3))],
+    res.cox_noQMI<-survival::coxph(Surv(`Time`,Censored) ~ surv[,c(4:(n_cov+3))],
                          data = surv)
-    res.cox_QMI<-coxph(Surv(`Time`,Censored) ~ poly(QMI,degree) + surv[,c(4:(n_cov+3))],
+    res.cox_QMI<-survival::coxph(Surv(`Time`,Censored) ~ poly(QMI,degree) + surv[,c(4:(n_cov+3))],
                        data = surv)
     myLRT = -2*(res.cox_noQMI$loglik[2] - res.cox_QMI$loglik[2])
     pval_surv = c(pval_surv, pchisq(myLRT, degree, lower.tail = F))

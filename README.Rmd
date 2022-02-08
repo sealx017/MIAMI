@@ -23,7 +23,7 @@ One can install the developmental version of MIAMI by running the command: **dev
 
 ```{r loading packages, message=FALSE}
 devtools::install_github('sealx017/MIAMI')
-#require(MIAMI)
+require(MIAMI)
 #suppressMessages(source("/Users/seals/Documents/GitHub/MIAMI/R/density_and_EQMI.R"))
 #require(ks)
 #require(survival)
@@ -78,7 +78,7 @@ d\) (1, 2, 3, 4, 5), denoted by EQMI_12345.
 ```{r EQMI_star_computation}
 
 EQMI_vector = QMI_all(marker_data[,1:3], bandwidth = "Ind", measure = "EQMI_star", progress_bar = "False")
-head(formattable(EQMI_vector))
+head(formattable::formattable(EQMI_vector))
 
 ```
 
@@ -91,7 +91,7 @@ Using the vector of estimated EQMI\* of all the subjects, we perform association
 surv_dat = clinical_data[,c(1,4:5)]
 covariates = clinical_data[,c(1,6)]
 SurvCox = Cox_PH(surv_dat, covariates, EQMI_vector, degree = 1)
-formattable(SurvCox, align = c('l', 'r'))
+formattable::formattable(SurvCox, align = c('l', 'r'))
 
 ```
 
@@ -101,7 +101,7 @@ Below, we create a matrix named recur_dat with all the subject IDs and their rec
 
 recur_dat = clinical_data[,c(1:3)]
 RecurCox = Cox_PH(recur_dat, covariates, EQMI_vector, degree = 1)
-formattable(RecurCox, align = c('l', 'r'))
+formattable::formattable(RecurCox, align = c('l', 'r'))
 
 ```
 
@@ -153,7 +153,4 @@ b\) Principe, J. C. (2010). Information theoretic learning: Renyi's entropy and 
 
 #### Expression of the measures
 
-$$ \\begin{aligned} &\\text{EQMI}^\*(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\ 
-&\\text{EQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = V_J -2V_C + V_M\\
-&\\text{CSQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \log\\frac{V_J V_M}{V_C^2}\\
-&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\ &V_C = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1j}(x\_{1})f\_{2j}(x\_{2})\\ & \\ldots f\_{pj}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\ &V_M = \\int \\int \\ldots \\int f\_{1j}(x\_{1})^2f\_{2j}(x\_{2})^2 \\ldots f\_{pj}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}. \\end{aligned} $$
+$$ x \times y $$
