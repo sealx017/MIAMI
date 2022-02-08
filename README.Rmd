@@ -1,0 +1,159 @@
+---
+title: "MIAMI"
+author: Souvik Seal
+output: github_document
+bibliography: ref.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#",
+  out.width = "100%",
+  messages = FALSE,
+  warnings = FALSE
+)
+```
+
+This is an R package implementing the proposed method from the paper, "MIAMI: Mutual Information-based Analysis of Multiplex Imaging data". The package provides a thorough pipeline for performing marker co-expression analysis of multiplex imaging datasets, coming from Vectra or MIBI platforms. The package also provides functions for computing several mutual information theoretic measures, such as EQMI and CSQMI for measuring dependence between random variables (Principe 2010) in general datasets.
+
+## Loading required packages
+
+One can install the developmental version of MIAMI by running the command: **devtools::install_github('sealx017/MIAMI')**.
+
+```{r loading packages, message=FALSE}
+devtools::install_github('sealx017/MIAMI')
+#require(MIAMI)
+#suppressMessages(source("/Users/seals/Documents/GitHub/MIAMI/R/density_and_EQMI.R"))
+#require(ks)
+#require(survival)
+#require(survminer)
+#library(formattable)
+
+```
+
+## Loading the dataset
+
+Next, we import the example datasets named, "Marker_Data.csv" and "Clinical_Data.csv". The first one is the expression dataset of five markers, HLA-DR, CD45RO, H3K27me3, H3K9ac and HLA_Class_1, and 39 subjects. The second one is the clinical dataset with recurrence and survival outcomes. Both of these files are extracted from the triple-negative breast cancer MIBI data first published in Keren et. al. 2018. The files have a common column named "ID" denoting individual subject IDs.
+
+```{r loading the marker expression and the clinical data, out.width = "50%"}
+
+marker_data = read.csv("Data/Marker_Data.csv")
+clinical_data = read.csv("Data/Clinical_Data.csv")
+
+```
+
+```{r, echo = T, results = T}
+head(marker_data)
+```
+
+```{r, echo = T, results = T}
+head(clinical_data)
+```
+
+## Compute EQMI\*, EQMI and CSQMI with an arbitrary data matrix
+
+We start by showing how to compute the measures, EQMI\*, EQMI, and CSQMI (Principe 2010) between arbitrary random variables (r.v.) where the data does not necessarily have a multiplex imaging data structure. We create a matrix named Data_matrix with 5000 samples and 5 columns corresponding to five r.v.'s.
+
+```{r Computing EQMI*, EQMI and CSQMI with an arbitrary data matrix, echo = T, results = T}
+
+Data_matrix = marker_data[1:5000,-1]
+QMIs = QMI(Data_matrix, bandwidth = "Ind", measure = "All", var_names = T)
+print(QMIs)
+
+```
+
+## Computing subject specific EQMI values with imaging data
+
+We compute the measure, EQMI\* for every subject. A novelty of the computation algorithm is that it is computed in a step-wise fashion. It means that along with the EQMI\* between the full set of markers, one can easily extract the EQMI\* between several smaller sets of markers. For example, while computing the EQMI\* between five markers, (1, 2, 3, 4, 5), the EQMI\* between all the following sets of markers can also be extracted,
+
+a\) (1, 2), denoted by EQMI_12
+
+b\) (1, 2, 3), denoted by EQMI_123
+
+c\) (1, 2, 3, 4), denoted by EQMI_1234
+
+d\) (1, 2, 3, 4, 5), denoted by EQMI_12345.
+
+```{r EQMI_star_computation}
+
+EQMI_vector = QMI_all(marker_data[,1:3], bandwidth = "Ind", measure = "EQMI_star", progress_bar = "False")
+head(formattable(EQMI_vector))
+
+```
+
+## Association testing using CoxPH model
+
+Using the vector of estimated EQMI\* of all the subjects, we perform association analysis with two clinical outcomes, survival and recurrence. We have both the survival and recurrence times and respective censoring indicators ( = 0 for an event) as columns of the matrix named clinical_data. We have one single covariate "Age" in the same matrix. Below, we create a matrix named surv_dat with all the subject IDs and their survival outcomes, and another matrix named covariates with the subject IDs and available covariates which, in this case, is just "Age".
+
+```{r CoxPh model studying association between EQMI and survival}
+
+surv_dat = clinical_data[,c(1,4:5)]
+covariates = clinical_data[,c(1,6)]
+SurvCox = Cox_PH(surv_dat, covariates, EQMI_vector, degree = 1)
+formattable(SurvCox, align = c('l', 'r'))
+
+```
+
+Below, we create a matrix named recur_dat with all the subject IDs and their recurrence outcomes, and use the same covariates matrix as earlier.
+
+```{r CoxPh model studying association between EQMI and recurrence}
+
+recur_dat = clinical_data[,c(1:3)]
+RecurCox = Cox_PH(recur_dat, covariates, EQMI_vector, degree = 1)
+formattable(RecurCox, align = c('l', 'r'))
+
+```
+
+## Few more tools: Compute and plot univariate and bivariate kernel densities of the markers
+
+#### Univariate marginal density
+
+We provide a few basic functions to estimate and plot the univariate marginal densities of the random variables. We go back to the matrix named Data_matrix which has 5000 samples and 5 columns corresponding to five r.v.'s. We look at first two columns (call them, X_1 and X_2) and estimate their kernel density estimates as f_1 and f_2 using the function dens_univ. Next, using the function univ_dens_plot, we plot f_1 and f_2. The default number of grids is, ngrids = 1024 and the bandwidth parameter is selected using Silverman's 'rule of thumb'.
+
+```{r Computing univ density, fig.show = "hold", out.width = "50%"}
+
+X_1 = Data_matrix[,1]
+X_2 = Data_matrix[,2]  
+
+f_1 = univ_dens(X_1, ngrids = 1024)
+f_2 = univ_dens(X_2, ngrids = 1024)
+
+p1 = univ_dens_plot(f_1)
+p2 = univ_dens_plot(f_2)
+
+```
+
+#### Bivariate joint density
+
+We estimate the bivariate joint density of X_1 and X_2, as f_12 using the function biv_dens. Next, using the function biv_dens_plot, we plot f_12. The default number of grids is, ngrids = 512 and the bandwidth matrix used is the multivariate plug-in bandwidth matrix Wand, M.P. & Jones, M.C. (1994).
+
+```{r Computing biv density}
+
+
+f_12 = biv_dens(cbind(X_1, X_2), ngrids = 512)
+q1 = quantile(X_1, 0.7)
+q2 = quantile(X_2, 0.7)
+p = biv_dens_plot(f_12, maxs = c(q1, q2))
+
+
+```
+
+```{r, include=FALSE}
+#knitr::write_bib(file = 'packages.bib')
+```
+
+### References
+
+a\) Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma, S., ... & Angelo, M. (2018). A structured tumor-immune microenvironment in triple negative breast cancer revealed by multiplexed ion beam imaging. Cell, 174(6), 1373-1387.
+
+b\) Principe, J. C. (2010). Information theoretic learning: Renyi's entropy and kernel perspectives. Springer Science & Business Media.
+
+### Appendix
+
+#### Expression of the measures
+
+$$ \\begin{aligned} &\\text{EQMI}^\*(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\ 
+&\\text{EQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = V_J -2V_C + V_M\\
+&\\text{CSQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \log\\frac{V_J V_M}{V_C^2}\\
+&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\ &V_C = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1j}(x\_{1})f\_{2j}(x\_{2})\\ & \\ldots f\_{pj}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\ &V_M = \\int \\int \\ldots \\int f\_{1j}(x\_{1})^2f\_{2j}(x\_{2})^2 \\ldots f\_{pj}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}. \\end{aligned} $$

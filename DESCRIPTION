@@ -1,0 +1,21 @@
+Package: MIAMI
+Type: Package
+Title: Mutual Information-based Analysis of Multiplex Imaging data
+Version: 0.0.1
+Authors@R: 
+    c(person(given = "Souvik",
+           family = "Seal",
+           role = c("aut", "cre"),
+           email = "souvik.seal@cuanschutz.edu",
+           comment = c(ORCID = "0000-0003-3268-610X")))
+Maintainer: The package maintainer <souvik.seal@cuanschutz.edu>
+Description: The package provides a thorough pipeline for performing marker co-expression analysis of multiplex imaging datasets coming from Vectra or MIBI platforms. The package also provides functions for computing several mutual information theoretic measures, such as EQMI and CSQMI for measuring dependence between random variables in general datasets.
+Imports: ks, survival, formattable
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.2
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
