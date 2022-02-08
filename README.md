@@ -1,41 +1,37 @@
 MIAMI
 ================
-Souvik Seal
+Souvik Seal and Debashis Ghosh
 
 This is an R package implementing the proposed method from the paper,
 “MIAMI: Mutual Information-based Analysis of Multiplex Imaging data.”
 The package provides a thorough pipeline for performing marker
-co-expression analysis of multiplex imaging datasets, coming from Vectra
-or MIBI platforms. The package also provides functions for computing
-several mutual information theoretic measures, such as EQMI and CSQMI
-for measuring dependence between random variables (Principe 2010) in
-general datasets.
+co-expression analysis of multiplex imaging data, such as Vectra (Huang
+et. al. 2013) and MIBI data (Keren et. al. 2019). The package also
+provides standalone functions for computing several mutual information
+(MI) theoretic measures (Principe 2010), such as EQMI\*, EQMI and CSQMI
+for quantifying the dependence between random variables in general
+datasets (definitions are available below in the appendix).
 
-## Loading required packages
+## Loading the package
 
-One can install the developmental version of MIAMI by running the
-command: **devtools::install_github(‘sealx017/MIAMI’)**.
+We install and load the developmental version of MIAMI from GitHub.
 
 ``` r
-devtools::install_github('sealx017/MIAMI')
+suppressMessages(devtools::install_github('sealx017/MIAMI'))
 require(MIAMI)
-#suppressMessages(source("/Users/seals/Documents/GitHub/MIAMI/R/density_and_EQMI.R"))
-#require(ks)
-#require(survival)
-#require(survminer)
-#library(formattable)
 ```
 
-## Loading the dataset
+## Loading the example datasets
 
-Next, we import the example datasets named, “Marker_Data.csv” and
-“Clinical_Data.csv.” The first one is the expression dataset of five
-markers, HLA-DR, CD45RO, H3K27me3, H3K9ac and HLA_Class_1, and 39
-subjects. The second one is the clinical dataset with recurrence and
-survival outcomes. Both of these files are extracted from the
-triple-negative breast cancer MIBI data first published in Keren et.
-al. 2018. The files have a common column named “ID” denoting individual
-subject IDs.
+Next, we import the example files named, “Marker_Data.csv” and
+“Clinical_Data.csv.” The first one has expression data of five markers
+(![p](https://latex.codecogs.com/png.latex?p "p") = 5), HLA-DR, CD45RO,
+H3K27me3, H3K9ac and HLA_Class_1 for 39 subjects. The second one has
+data of two clinical outcomes, recurrence and survival and one
+covariate, Age for the same set of subjects. Both of these files are
+extracted from the triple-negative breast cancer MIBI data first
+published in Keren et. al. 2018. The files have a common column named
+“ID” denoting subject IDs.
 
 ``` r
 marker_data = read.csv("Data/Marker_Data.csv")
@@ -43,238 +39,174 @@ clinical_data = read.csv("Data/Clinical_Data.csv")
 ```
 
 ``` r
-head(marker_data)
-#   ID     HLA.DR      CD45RO HLA_Class_1  H3K27me3     H3K9ac
-# 1  1 0.08877669 0.002944144  0.22952856 0.1766168 0.07040106
-# 2  1 0.01181060 0.140753465  0.21500855 0.5186082 0.28326167
-# 3  1 0.00000000 0.000000000  0.01786649 0.2305889 0.02067860
-# 4  1 0.01256025 0.000000000  0.23178456 0.4331141 0.23143812
-# 5  1 0.18438106 0.033963838  0.14920787 0.7069783 0.46471933
-# 6  1 0.08322602 0.000000000  0.19864780 0.7122134 0.48791729
+knitr::kable(head(marker_data), format="markdown")
 ```
 
+|  ID |    HLA.DR |    CD45RO | HLA_Class_1 |  H3K27me3 |    H3K9ac |
+|----:|----------:|----------:|------------:|----------:|----------:|
+|   1 | 0.0887767 | 0.0029441 |   0.2295286 | 0.1766168 | 0.0704011 |
+|   1 | 0.0118106 | 0.1407535 |   0.2150085 | 0.5186082 | 0.2832617 |
+|   1 | 0.0000000 | 0.0000000 |   0.0178665 | 0.2305889 | 0.0206786 |
+|   1 | 0.0125603 | 0.0000000 |   0.2317846 | 0.4331141 | 0.2314381 |
+|   1 | 0.1843811 | 0.0339638 |   0.1492079 | 0.7069783 | 0.4647193 |
+|   1 | 0.0832260 | 0.0000000 |   0.1986478 | 0.7122134 | 0.4879173 |
+
 ``` r
-head(clinical_data)
-#   ID Recurrence Recurrence_time Survival Survival_time Age
-# 1  1          0               9        0          2612  77
-# 2  2          1             745        0           745  67
-# 3  3          1            3130        1          3130  42
-# 4  4          0              31        1          2523  41
-# 5  5          1            1683        1          1683  64
-# 6  6          1            2275        1          2275  53
+knitr::kable(head(clinical_data), format="markdown")
 ```
+
+|  ID | Recurrence | Recurrence_time | Survival | Survival_time | Age |
+|----:|-----------:|----------------:|---------:|--------------:|----:|
+|   1 |          0 |               9 |        0 |          2612 |  77 |
+|   2 |          1 |             745 |        0 |           745 |  67 |
+|   3 |          1 |            3130 |        1 |          3130 |  42 |
+|   4 |          0 |              31 |        1 |          2523 |  41 |
+|   5 |          1 |            1683 |        1 |          1683 |  64 |
+|   6 |          1 |            2275 |        1 |          2275 |  53 |
 
 ## Compute EQMI\*, EQMI and CSQMI with an arbitrary data matrix
 
-We start by showing how to compute the measures, EQMI\*, EQMI, and CSQMI
-(Principe 2010) between arbitrary random variables (r.v.’s) where the
-data does not necessarily have a multiplex imaging data structure. We
-create a matrix named Data_matrix with 5000 samples and 5 columns
-corresponding to five r.v.’s.
+-   We start by showing how to compute the MI-based measures, EQMI\*,
+    EQMI, and CSQMI (Principe 2010) between any arbitrary set of random
+    variables (r.v.’s) from a general data-frame i.e., when the data
+    does not necessarily come from multiplex imaging platforms. We
+    create a matrix named Data_matrix with 2500 samples and 5 columns
+    corresponding to five r.v.’s and use it in the function named QMI to
+    estimate the measures.
+
+-   A novelty of the estimation algorithm is that the quantities are
+    computed in a step-wise fashion. It means that along with the EQMI\*
+    between the full set of markers, one can easily extract the EQMI\*
+    between several smaller sets of markers. For example, with
+    ![p](https://latex.codecogs.com/png.latex?p "p") = 5 markers, (1, 2,
+    3, 4, 5), the EQMI\* between all the following sets of markers can
+    be extracted in a single estimation procedure,
+
+    -   (1, 2), denoted by EQMI\*\_12
+    -   (1, 2, 3), denoted by EQMI\*\_123
+    -   (1, 2, 3, 4), denoted by EQMI\*\_1234
+    -   (1, 2, 3, 4, 5), denoted by EQMI\*\_12345.
+
+-   The estimation algorithm requires selecting bandwidth parameters for
+    each of the r.v.’s. the default option, bandwidth = “Hpi” uses the
+    multivariate plug-in bandwidth matrix described in Wand, M. P., &
+    Jones, M. C. (1994). However, in larger datasets (especially, for
+    large ![p](https://latex.codecogs.com/png.latex?p "p")) for faster
+    computation, bandwidth = “Ind,” which chooses bandwidth by
+    Silverman’s rule (Silverman, B.W. (2018)) for every r.v., can be
+    used.
 
 ``` r
-Data_matrix = marker_data[1:5000,-1]
-QMIs = QMI(Data_matrix, bandwidth = "Ind", measure = "All", var_names = T)
+Data_matrix = marker_data[1:2500, -1]
+QMIs = QMI(Data_matrix, bandwidth = "HPI", measure = "All", var_names = T)
 print(QMIs)
-# $EQMI_star
-#              Estimate
-# EQMI*_12    0.0127644
-# EQMI*_123   0.1749177
-# EQMI*_1234  0.3478008
-# EQMI*_12345 0.5455553
-# 
-# $EQMI
-#               Estimate
-# EQMI_12       1.795842
-# EQMI_123     88.907543
-# EQMI_1234   497.865526
-# EQMI_12345 2479.777068
-# 
-# $CSQMI
-#               Estimate
-# CSQMI_12    0.01859524
-# CSQMI_123   0.28237864
-# CSQMI_1234  0.58020008
-# CSQMI_12345 0.98040785
-# 
-# $Bandwidth_parameters
-#             h1           h2           h3           h4           h5
-# 1 0.0003397939 0.0001460787 0.0004341861 0.0006256999 0.0006317829
+$EQMI_star
+              Estimate
+EQMI*_12    0.01650183
+EQMI*_123   0.19007064
+EQMI*_1234  0.36213356
+EQMI*_12345 0.56960589
+
+$EQMI
+              Estimate
+EQMI_12       6.200363
+EQMI_123    283.226354
+EQMI_1234  1574.540741
+EQMI_12345 8456.344853
+
+$CSQMI
+              Estimate
+CSQMI_12    0.01822507
+CSQMI_123   0.27834795
+CSQMI_1234  0.55462570
+CSQMI_12345 0.96711185
+
+$Bandwidth_parameters
+            h1           h2           h3           h4           h5
+1 0.0001129059 3.739611e-05 0.0003045994 0.0005547427 0.0005718942
 ```
 
-## Computing subject specific EQMI values with imaging data
+## Computing subject specific EQMI\* values with the imaging data
 
-We compute the measure, EQMI\* for every subject. A novelty of the
-computation algorithm is that it is computed in a step-wise fashion. It
-means that along with the EQMI\* between the full set of markers, one
-can easily extract the EQMI\* between several smaller sets of markers.
-For example, while computing the EQMI\* between five markers, (1, 2, 3,
-4, 5), the EQMI\* between all the following sets of markers can also be
-extracted,
-
-a\) (1, 2), denoted by EQMI_12
-
-b\) (1, 2, 3), denoted by EQMI_123
-
-c\) (1, 2, 3, 4), denoted by EQMI_1234
-
-d\) (1, 2, 3, 4, 5), denoted by EQMI_12345.
+We return to the analysis of multiplex imaging data. We compute the
+EQMI\* of all the subjects using the function QMI_all and store the
+values in a matrix whose every row corresponds to a subject.
 
 ``` r
-EQMI_vector = QMI_all(marker_data[,1:3], bandwidth = "Ind", measure = "EQMI_star", progress_bar = "False")
-head(formattable::formattable(EQMI_vector))
+EQMI_vector = QMI_all(marker_data, bandwidth = "Ind", measure = "EQMI_star", progress_bar = "False")
+knitr::kable(head(EQMI_vector), format="markdown")
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-ID
-</th>
-<th style="text-align:right;">
-EQMI\*\_12
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.012246224
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0.018322808
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-0.064883525
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-0.007688614
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0.073581489
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-0.032740427
-</td>
-</tr>
-</tbody>
-</table>
+|  ID | EQMI\*\_12 | EQMI\*\_123 | EQMI\*\_1234 | EQMI\*\_12345 |
+|----:|-----------:|------------:|-------------:|--------------:|
+|   1 |  0.0122462 |   0.1705994 |    0.3427808 |     0.5413480 |
+|   2 |  0.0183228 |   0.1212016 |    0.3560708 |     0.4309078 |
+|   3 |  0.0648835 |   0.3260319 |    0.3505626 |     0.5423636 |
+|   4 |  0.0076886 |   0.1274159 |    0.2140916 |     0.4323397 |
+|   5 |  0.0735815 |   0.3347920 |    0.3927648 |     0.5451000 |
+|   6 |  0.0327404 |   0.1719063 |    0.2413455 |     0.5027947 |
 
 ## Association testing using CoxPH model
 
+### Association testing with survival outcome
+
 Using the vector of estimated EQMI\* of all the subjects, we perform
 association analysis with two clinical outcomes, survival and
-recurrence. We have both the survival and recurrence times and
-respective censoring indicators ( = 0 for an event) as columns of the
-matrix named clinical_data. We have one single covariate “Age” in the
+recurrence. We have both the survival and recurrence times and the
+respective censoring indicators (= 0 for an event) as the columns of the
+matrix named clinical_data. We have one single covariate, Age in the
 same matrix. Below, we create a matrix named surv_dat with all the
 subject IDs and their survival outcomes, and another matrix named
 covariates with the subject IDs and available covariates which, in this
-case, is just “Age.”
+case, is just Age. We then use the function Cox_PH to fit the
+proportional hazard (PH) model outputting a table of p-values. To add
+higher order terms in the PH model, change degree to \> 1.
 
 ``` r
 surv_dat = clinical_data[,c(1,4:5)]
 covariates = clinical_data[,c(1,6)]
 SurvCox = Cox_PH(surv_dat, covariates, EQMI_vector, degree = 1)
-formattable::formattable(SurvCox, align = c('l', 'r'))
+knitr::kable(SurvCox, format="markdown")
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:right;">
-p-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-EQMI\*\_12
-</td>
-<td style="text-align:right;">
-0.06856923
-</td>
-</tr>
-</tbody>
-</table>
+| Variable      |   p-value |
+|:--------------|----------:|
+| EQMI\*\_12    | 0.0685692 |
+| EQMI\*\_123   | 0.0373026 |
+| EQMI\*\_1234  | 0.0467573 |
+| EQMI\*\_12345 | 0.0150054 |
+
+### Association testing with recurrence outcome
 
 Below, we create a matrix named recur_dat with all the subject IDs and
 their recurrence outcomes, and use the same covariates matrix as
-earlier.
+earlier. We again use the Cox_PH function and get the p-values.
 
 ``` r
 recur_dat = clinical_data[,c(1:3)]
 RecurCox = Cox_PH(recur_dat, covariates, EQMI_vector, degree = 1)
-formattable::formattable(RecurCox, align = c('l', 'r'))
+knitr::kable(RecurCox, format="markdown")
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:right;">
-p-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-EQMI\*\_12
-</td>
-<td style="text-align:right;">
-0.06092791
-</td>
-</tr>
-</tbody>
-</table>
+| Variable      |   p-value |
+|:--------------|----------:|
+| EQMI\*\_12    | 0.0609279 |
+| EQMI\*\_123   | 0.0268636 |
+| EQMI\*\_1234  | 0.0119667 |
+| EQMI\*\_12345 | 0.0128277 |
 
-## Few more tools: Compute and plot univariate and bivariate kernel densities of the markers
+## Additional tools: Compute and plot univariate and bivariate kernel densities of the markers
 
 #### Univariate marginal density
 
 We provide a few basic functions to estimate and plot the univariate
 marginal densities of the random variables. We go back to the matrix
-named Data_matrix which has 5000 samples and 5 columns corresponding to
+named Data_matrix which has 2500 samples and 5 columns corresponding to
 five r.v.’s. We look at first two columns (call them, X_1 and X_2) and
 estimate their kernel density estimates as f_1 and f_2 using the
 function dens_univ. Next, using the function univ_dens_plot, we plot f_1
 and f_2. The default number of grids is, ngrids = 1024 and the bandwidth
-parameter is selected using Silverman’s ‘rule of thumb.’
+parameter is selected using Silverman’s rule.
 
 ``` r
 X_1 = Data_matrix[,1]
@@ -294,45 +226,84 @@ p2 = univ_dens_plot(f_2)
 We estimate the bivariate joint density of X_1 and X_2, as f_12 using
 the function biv_dens. Next, using the function biv_dens_plot, we plot
 f_12. The default number of grids is, ngrids = 512 and the bandwidth
-matrix used is the multivariate plug-in bandwidth matrix Wand, M.P. &
-Jones, M.C. (1994).
+matrix used is the multivariate plug-in bandwidth matrix described in
+Wand, M. P., & Jones, M. C. (1994). It may be easy to interpret the
+estimated density focusing only on the smaller values of
+![X_1](https://latex.codecogs.com/png.latex?X_1 "X_1") and
+![X_2](https://latex.codecogs.com/png.latex?X_2 "X_2") since both the
+r.v.’s usually have most of the values close to 0. Hence, we use two
+thresholds (q1, q2) to display the estimated density only between 70%
+quantiles of both the r.v.’s.
 
 ``` r
 
 f_12 = biv_dens(cbind(X_1, X_2), ngrids = 512)
-q1 = quantile(X_1, 0.7)
-q2 = quantile(X_2, 0.7)
+q1 = quantile(X_1, 0.7); q2 = quantile(X_2, 0.7)
 p = biv_dens_plot(f_12, maxs = c(q1, q2))
 ```
 
 <img src="README_files/figure-gfm/Computing biv density-1.png" width="100%" />
 
-### References
+## References
 
-a\) Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma,
+a\) Huang, W., Hennrick, K., & Drew, S. (2013). A colorful future of
+quantitative pathology: validation of Vectra technology using
+chromogenic multiplexed immunohistochemistry and prostate tissue
+microarrays. Human pathology, 44(1), 29-38.
+
+b\) Keren, L., Bosse, M., Thompson, S., Risom, T., Vijayaragavan, K.,
+McCaffrey, E., … & Angelo, M. (2019). MIBI-TOF: A multiplexed imaging
+platform relates cellular phenotypes and tissue structure. Science
+advances, 5(10), eaax5851.
+
+c\) Principe, J. C. (2010). Information theoretic learning: Renyi’s
+entropy and kernel perspectives. Springer Science & Business Media.
+
+d\) Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma,
 S., … & Angelo, M. (2018). A structured tumor-immune microenvironment in
 triple negative breast cancer revealed by multiplexed ion beam imaging.
 Cell, 174(6), 1373-1387.
 
-b\) Principe, J. C. (2010). Information theoretic learning: Renyi’s
-entropy and kernel perspectives. Springer Science & Business Media.
+e\) Wand, M. P., & Jones, M. C. (1994). Multivariate plug-in bandwidth
+selection. Computational Statistics, 9(2), 97-116.
 
-### Appendix
+f\) Silverman, B. W. (2018). Density estimation for statistics and data
+analysis. Routledge.
 
-#### Expression of the measures
+## Appendix
 
-Here, we show the mathematical expressions of the three different
-measures, EQMI\*, EQMI and CSQMI, implemented in this package. Further
-details can be found in the manuscript, “MIAMI: Mutual Information-based
-Analysis of Multiplex Imaging data.”
+### Definition of the measures
 
-$$
-\\begin{align}
-&\\text{EQMI}^\*(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\\\
-&\\text{EQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = V_J -2V_C + V_M\\\\
-&\\text{CSQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\log(V_J) -2\\log(V_C) + \\log(V_M)\\\\
-&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\\\
-&V_C = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1j}(x\_{1})f\_{2j}(x\_{2}) \\ldots f\_{pj}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\\\
-&V_M = \\int \\int \\ldots \\int f\_{1j}(x\_{1})^2f\_{2j}(x\_{2})^2 \\ldots f\_{pj}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}.
-\\end{align}
-$$
+Here, we show the mathematical definitions of the three different
+MI-based measures, EQMI\*, EQMI and CSQMI, implemented in this package.
+
+![
+\\begin{align\*}
+&\\text{EQMI}^\*(X\_{1}, X\_{2}, \\ldots, X\_{p}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\\\
+&\\text{EQMI}(X\_{1}, X\_{2}, \\ldots, X\_{p}) = V_J -2V_C + V_M\\\\
+&\\text{CSQMI}(X\_{1}, X\_{2}, \\ldots, X\_{p}) = \\log(V_J) -2\\log(V_C) + \\log(V_M)\\\\
+&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\\\
+&V_C = \\int \\int \\ldots \\int f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1}(x\_{1})f\_{2}(x\_{2}) \\ldots f\_{p}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\\\
+&V_M = \\int \\int \\ldots \\int f\_{1}(x\_{1})^2f\_{2}(x\_{2})^2 \\ldots f\_{p}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}.
+\\end{align\*}
+](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign%2A%7D%0A%26%5Ctext%7BEQMI%7D%5E%2A%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Cfrac%7BV_J%20-2V_C%20%2B%20V_M%7D%7BV_J%20%2B%20V_M%7D%5C%5C%0A%26%5Ctext%7BEQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20V_J%20-2V_C%20%2B%20V_M%5C%5C%0A%26%5Ctext%7BCSQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Clog%28V_J%29%20-2%5Clog%28V_C%29%20%2B%20%5Clog%28V_M%29%5C%5C%0A%26V_J%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29%5E2dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%20%5C%5C%0A%26V_C%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29f_%7B1%7D%28x_%7B1%7D%29f_%7B2%7D%28x_%7B2%7D%29%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%5C%5C%0A%26V_M%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B1%7D%28x_%7B1%7D%29%5E2f_%7B2%7D%28x_%7B2%7D%29%5E2%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29%5E2%20dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D.%0A%5Cend%7Balign%2A%7D%0A "
+\begin{align*}
+&\text{EQMI}^*(X_{1}, X_{2}, \ldots, X_{p}) = \frac{V_J -2V_C + V_M}{V_J + V_M}\\
+&\text{EQMI}(X_{1}, X_{2}, \ldots, X_{p}) = V_J -2V_C + V_M\\
+&\text{CSQMI}(X_{1}, X_{2}, \ldots, X_{p}) = \log(V_J) -2\log(V_C) + \log(V_M)\\
+&V_J = \int \int \ldots \int f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})^2dx_{1}dx_{2} \ldots dx_{p} \\
+&V_C = \int \int \ldots \int f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})f_{1}(x_{1})f_{2}(x_{2}) \ldots f_{p}(x_{p})dx_{1}dx_{2} \ldots dx_{p}\\
+&V_M = \int \int \ldots \int f_{1}(x_{1})^2f_{2}(x_{2})^2 \ldots f_{p}(x_{p})^2 dx_{1}dx_{2} \ldots dx_{p}.
+\end{align*}
+")
+
+![f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})](https://latex.codecogs.com/png.latex?f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29 "f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})")
+is the joint PDF and
+![f\_{1}(x\_{1}), f\_{2}(x\_{2}), \\ldots f\_{p}(x\_{p})](https://latex.codecogs.com/png.latex?f_%7B1%7D%28x_%7B1%7D%29%2C%20f_%7B2%7D%28x_%7B2%7D%29%2C%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29 "f_{1}(x_{1}), f_{2}(x_{2}), \ldots f_{p}(x_{p})")
+are the marginal PDFs of the
+![p](https://latex.codecogs.com/png.latex?p "p") variables. The details
+of the efficient algorithm used for estimating
+![V_J, V_C](https://latex.codecogs.com/png.latex?V_J%2C%20V_C "V_J, V_C")
+and ![V_M](https://latex.codecogs.com/png.latex?V_M "V_M") can be found
+in the manuscript, “MIAMI: Mutual Information-based Analysis of
+Multiplex Imaging data.”
