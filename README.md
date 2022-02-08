@@ -321,4 +321,18 @@ entropy and kernel perspectives. Springer Science & Business Media.
 
 #### Expression of the measures
 
-*x* × *y*
+Here, we show the mathematical expressions of the three different
+measures, EQMI\*, EQMI and CSQMI, implemented in this package. Further
+details can be found in the manuscript, “MIAMI: Mutual Information-based
+Analysis of Multiplex Imaging data.”
+
+$$
+\\begin{align}
+&\\text{EQMI}^\*(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\\\
+&\\text{EQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = V_J -2V_C + V_M\\\\
+&\\text{CSQMI}(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\log(V_J) -2\\log(V_C) + \\log(V_M)\\\\
+&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\\\
+&V_C = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1j}(x\_{1})f\_{2j}(x\_{2}) \\ldots f\_{pj}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\\\
+&V_M = \\int \\int \\ldots \\int f\_{1j}(x\_{1})^2f\_{2j}(x\_{2})^2 \\ldots f\_{pj}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}.
+\\end{align}
+$$

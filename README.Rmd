@@ -17,12 +17,12 @@ knitr::opts_chunk$set(
 
 This is an R package implementing the proposed method from the paper, "MIAMI: Mutual Information-based Analysis of Multiplex Imaging data". The package provides a thorough pipeline for performing marker co-expression analysis of multiplex imaging datasets, coming from Vectra or MIBI platforms. The package also provides functions for computing several mutual information theoretic measures, such as EQMI and CSQMI for measuring dependence between random variables (Principe 2010) in general datasets.
 
-## Loading required packages
+## Loading the package
 
-One can install the developmental version of MIAMI by running the command: **devtools::install_github('sealx017/MIAMI')**.
+We install and load the developmental version of MIAMI.
 
 ```{r loading packages, message=FALSE}
-devtools::install_github('sealx017/MIAMI')
+suppressMessages(devtools::install_github('sealx017/MIAMI'))
 require(MIAMI)
 #suppressMessages(source("/Users/seals/Documents/GitHub/MIAMI/R/density_and_EQMI.R"))
 #require(ks)
@@ -153,4 +153,15 @@ b\) Principe, J. C. (2010). Information theoretic learning: Renyi's entropy and 
 
 #### Expression of the measures
 
-$$ x \times y $$
+Here, we show the mathematical expressions of the three different measures, EQMI*, EQMI and CSQMI, implemented in this package. Further details can be found in the manuscript, "MIAMI: Mutual Information-based Analysis of Multiplex Imaging data". 
+
+$$
+\begin{align}
+&\text{EQMI}^*(X_{1j}, X_{2j}, \ldots, X_{pj}) = \frac{V_J -2V_C + V_M}{V_J + V_M}\\
+&\text{EQMI}(X_{1j}, X_{2j}, \ldots, X_{pj}) = V_J -2V_C + V_M\\
+&\text{CSQMI}(X_{1j}, X_{2j}, \ldots, X_{pj}) = \log(V_J) -2\log(V_C) + \log(V_M)\\
+&V_J = \int \int \ldots \int f_{12 \ldots pj}(x_{1}, x_{2}, \ldots , x_{p})^2dx_{1}dx_{2} \ldots dx_{p} \\
+&V_C = \int \int \ldots \int f_{12 \ldots pj}(x_{1}, x_{2}, \ldots , x_{p})f_{1j}(x_{1})f_{2j}(x_{2}) \ldots f_{pj}(x_{p})dx_{1}dx_{2} \ldots dx_{p}\\
+&V_M = \int \int \ldots \int f_{1j}(x_{1})^2f_{2j}(x_{2})^2 \ldots f_{pj}(x_{p})^2 dx_{1}dx_{2} \ldots dx_{p}.
+\end{align}
+$$
