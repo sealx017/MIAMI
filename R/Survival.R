@@ -35,9 +35,9 @@ Cox_PH<-function(clinical_dat, cov, EQMI_dat, degree = 1)
   pval_surv$Variable = colnames(EQMI_dat)[-1]
   pval_surv = pval_surv[,c(2,1)]
   df = pval_surv
-  sign_formatter <- formatter("span",
-  style = x ~ style(color = ifelse(x <0.01, "green",
-  ifelse(x < 0.05, "green", "black"))))
+  #sign_formatter <- formatter("span",
+  #style = x ~ style(color = ifelse(x <0.01, "green",
+  #ifelse(x < 0.05, "green", "black"))))
   #sign_formatter(c(-1, 0, 1))
   #print(formattable(df, list("Variable" = allblack_formatter,
   #                  "p-value" = sign_formatter), align = c('l', 'r')))

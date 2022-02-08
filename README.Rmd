@@ -53,7 +53,7 @@ head(clinical_data)
 
 ## Compute EQMI\*, EQMI and CSQMI with an arbitrary data matrix
 
-We start by showing how to compute the measures, EQMI\*, EQMI, and CSQMI (Principe 2010) between arbitrary random variables (r.v.) where the data does not necessarily have a multiplex imaging data structure. We create a matrix named Data_matrix with 5000 samples and 5 columns corresponding to five r.v.'s.
+We start by showing how to compute the measures, EQMI\*, EQMI, and CSQMI (Principe 2010) between arbitrary random variables (r.v.'s) where the data does not necessarily have a multiplex imaging data structure. We create a matrix named Data_matrix with 5000 samples and 5 columns corresponding to five r.v.'s.
 
 ```{r Computing EQMI*, EQMI and CSQMI with an arbitrary data matrix, echo = T, results = T}
 
