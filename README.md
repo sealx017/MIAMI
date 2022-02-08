@@ -100,30 +100,30 @@ knitr::kable(head(clinical_data), format="markdown")
 Data_matrix = marker_data[1:2500, -1]
 QMIs = QMI(Data_matrix, bandwidth = "HPI", measure = "All", var_names = T)
 print(QMIs)
-$EQMI_star
-              Estimate
-EQMI*_12    0.01650183
-EQMI*_123   0.19007064
-EQMI*_1234  0.36213356
-EQMI*_12345 0.56960589
-
-$EQMI
-              Estimate
-EQMI_12       6.200363
-EQMI_123    283.226354
-EQMI_1234  1574.540741
-EQMI_12345 8456.344853
-
-$CSQMI
-              Estimate
-CSQMI_12    0.01822507
-CSQMI_123   0.27834795
-CSQMI_1234  0.55462570
-CSQMI_12345 0.96711185
-
-$Bandwidth_parameters
-            h1           h2           h3           h4           h5
-1 0.0001129059 3.739611e-05 0.0003045994 0.0005547427 0.0005718942
+# $EQMI_star
+#               Estimate
+# EQMI*_12    0.01650183
+# EQMI*_123   0.19007064
+# EQMI*_1234  0.36213356
+# EQMI*_12345 0.56960589
+# 
+# $EQMI
+#               Estimate
+# EQMI_12       6.200363
+# EQMI_123    283.226354
+# EQMI_1234  1574.540741
+# EQMI_12345 8456.344853
+# 
+# $CSQMI
+#               Estimate
+# CSQMI_12    0.01822507
+# CSQMI_123   0.27834795
+# CSQMI_1234  0.55462570
+# CSQMI_12345 0.96711185
+# 
+# $Bandwidth_parameters
+#             h1           h2           h3           h4           h5
+# 1 0.0001129059 3.739611e-05 0.0003045994 0.0005547427 0.0005718942
 ```
 
 ## Computing subject specific EQMI\* values with the imaging data

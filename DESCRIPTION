@@ -10,7 +10,7 @@ Authors@R:
            comment = c(ORCID = "0000-0003-3268-610X")))
 Maintainer: The package maintainer <souvik.seal@cuanschutz.edu>
 Description: The package provides a thorough pipeline for performing marker co-expression analysis of multiplex imaging datasets coming from Vectra or MIBI platforms. The package also provides functions for computing several mutual information theoretic measures, such as EQMI and CSQMI for measuring dependence between random variables in general datasets.
-Imports: ks, survival, formattable
+Imports: ks, survival
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
