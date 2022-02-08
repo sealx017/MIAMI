@@ -17,14 +17,13 @@ One can install the developmental version of MIAMI by running the
 command: **devtools::install_github(‘sealx017/MIAMI’)**.
 
 ``` r
-#devtools::install_github('sealx017/DenVar')
-#require(MIAMI)
-suppressMessages(source("/Users/seals/Documents/GitHub/MIAMI/R/density_and_EQMI.R"))
-
-require(ks)
-require(survival)
+devtools::install_github('sealx017/MIAMI')
+require(MIAMI)
+#suppressMessages(source("/Users/seals/Documents/GitHub/MIAMI/R/density_and_EQMI.R"))
+#require(ks)
+#require(survival)
 #require(survminer)
-library(formattable)
+#library(formattable)
 ```
 
 ## Loading the dataset
@@ -68,10 +67,10 @@ head(clinical_data)
 ## Compute EQMI\*, EQMI and CSQMI with an arbitrary data matrix
 
 We start by showing how to compute the measures, EQMI\*, EQMI, and CSQMI
-(Principe 2010) between arbitrary random variables (r.v.) where the data
-does not necessarily have a multiplex imaging data structure. We create
-a matrix named Data_matrix with 5000 samples and 5 columns corresponding
-to five r.v.’s.
+(Principe 2010) between arbitrary random variables (r.v.’s) where the
+data does not necessarily have a multiplex imaging data structure. We
+create a matrix named Data_matrix with 5000 samples and 5 columns
+corresponding to five r.v.’s.
 
 ``` r
 Data_matrix = marker_data[1:5000,-1]
@@ -99,7 +98,8 @@ print(QMIs)
 # CSQMI_12345 0.98040785
 # 
 # $Bandwidth_parameters
-# [1] 0.0003397939 0.0001460787 0.0004341861 0.0006256999 0.0006317829
+#             h1           h2           h3           h4           h5
+# 1 0.0003397939 0.0001460787 0.0004341861 0.0006256999 0.0006317829
 ```
 
 ## Computing subject specific EQMI values with imaging data
@@ -122,7 +122,7 @@ d\) (1, 2, 3, 4, 5), denoted by EQMI_12345.
 
 ``` r
 EQMI_vector = QMI_all(marker_data[,1:3], bandwidth = "Ind", measure = "EQMI_star", progress_bar = "False")
-head(formattable(EQMI_vector))
+head(formattable::formattable(EQMI_vector))
 ```
 
 <table class="table table-condensed">
@@ -204,7 +204,7 @@ case, is just “Age.”
 surv_dat = clinical_data[,c(1,4:5)]
 covariates = clinical_data[,c(1,6)]
 SurvCox = Cox_PH(surv_dat, covariates, EQMI_vector, degree = 1)
-formattable(SurvCox, align = c('l', 'r'))
+formattable::formattable(SurvCox, align = c('l', 'r'))
 ```
 
 <table class="table table-condensed">
@@ -237,7 +237,7 @@ earlier.
 ``` r
 recur_dat = clinical_data[,c(1:3)]
 RecurCox = Cox_PH(recur_dat, covariates, EQMI_vector, degree = 1)
-formattable(RecurCox, align = c('l', 'r'))
+formattable::formattable(RecurCox, align = c('l', 'r'))
 ```
 
 <table class="table table-condensed">
@@ -280,8 +280,8 @@ parameter is selected using Silverman’s ‘rule of thumb.’
 X_1 = Data_matrix[,1]
 X_2 = Data_matrix[,2]  
 
-f_1 = dens_univ(X_1, ngrids = 1024)
-f_2 = dens_univ(X_2, ngrids = 1024)
+f_1 = univ_dens(X_1, ngrids = 1024)
+f_2 = univ_dens(X_2, ngrids = 1024)
 
 p1 = univ_dens_plot(f_1)
 p2 = univ_dens_plot(f_2)
@@ -309,23 +309,16 @@ p = biv_dens_plot(f_12, maxs = c(q1, q2))
 
 ### References
 
-1.  Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma,
-    S., … & Angelo, M. (2018). A structured tumor-immune
-    microenvironment in triple negative breast cancer revealed by
-    multiplexed ion beam imaging. Cell, 174(6), 1373-1387.
+a\) Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma,
+S., … & Angelo, M. (2018). A structured tumor-immune microenvironment in
+triple negative breast cancer revealed by multiplexed ion beam imaging.
+Cell, 174(6), 1373-1387.
 
-2.  Principe, J. C. (2010). Information theoretic learning: Renyi’s
-    entropy and kernel perspectives. Springer Science & Business Media.
+b\) Principe, J. C. (2010). Information theoretic learning: Renyi’s
+entropy and kernel perspectives. Springer Science & Business Media.
 
 ### Appendix
 
 #### Expression of the measures
 
-$$
-\\begin{aligned}
-&\\text{EQMI}^\*(X\_{1j}, X\_{2j}, \\ldots, X\_{pj}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\\\
-&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\\\
-&V_C = \\int \\int \\ldots \\int f\_{12 \\ldots pj}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1j}(x\_{1})f\_{2j}(x\_{2})\\\\ & \\ldots f\_{pj}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\\\
-&V_M = \\int \\int \\ldots \\int f\_{1j}(x\_{1})^2f\_{2j}(x\_{2})^2 \\ldots f\_{pj}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}.
-\\end{aligned}
-$$
+*x* × *y*
