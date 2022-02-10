@@ -34,11 +34,7 @@ published in Keren et. al. 2018. The files have a common column named
 “ID” denoting subject IDs.
 
 ``` r
-marker_data = read.csv("Data/Marker_Data.csv")
-clinical_data = read.csv("Data/Clinical_Data.csv")
-```
-
-``` r
+data("marker_data")
 knitr::kable(head(marker_data), format="markdown")
 ```
 
@@ -52,6 +48,7 @@ knitr::kable(head(marker_data), format="markdown")
 |   1 | 0.0832260 | 0.0000000 |   0.1986478 | 0.7122134 | 0.4879173 |
 
 ``` r
+data("clinical_data")
 knitr::kable(head(clinical_data), format="markdown")
 ```
 
