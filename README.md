@@ -278,25 +278,7 @@ analysis. Routledge.
 Here, we show the mathematical definitions of the three different
 MI-based measures, EQMI\*, EQMI and CSQMI, implemented in this package.
 
-![
-\\begin{align\*}
-&\\text{EQMI}^\*(X\_{1}, X\_{2}, \\ldots, X\_{p}) = \\frac{V_J -2V_C + V_M}{V_J + V_M}\\\\
-&\\text{EQMI}(X\_{1}, X\_{2}, \\ldots, X\_{p}) = V_J -2V_C + V_M\\\\
-&\\text{CSQMI}(X\_{1}, X\_{2}, \\ldots, X\_{p}) = \\log(V_J) -2\\log(V_C) + \\log(V_M)\\\\
-&V_J = \\int \\int \\ldots \\int f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})^2dx\_{1}dx\_{2} \\ldots dx\_{p} \\\\
-&V_C = \\int \\int \\ldots \\int f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1}(x\_{1})f\_{2}(x\_{2}) \\ldots f\_{p}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\\\
-&V_M = \\int \\int \\ldots \\int f\_{1}(x\_{1})^2f\_{2}(x\_{2})^2 \\ldots f\_{p}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}.
-\\end{align\*}
-](http://chart.apis.google.com/chart?cht=tx&chl=%0A%5Cbegin%7Balign%2A%7D%0A%26%5Ctext%7BEQMI%7D%5E%2A%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Cfrac%7BV_J%20-2V_C%20%2B%20V_M%7D%7BV_J%20%2B%20V_M%7D%5C%5C%0A%26%5Ctext%7BEQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20V_J%20-2V_C%20%2B%20V_M%5C%5C%0A%26%5Ctext%7BCSQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Clog%28V_J%29%20-2%5Clog%28V_C%29%20%2B%20%5Clog%28V_M%29%5C%5C%0A%26V_J%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29%5E2dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%20%5C%5C%0A%26V_C%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29f_%7B1%7D%28x_%7B1%7D%29f_%7B2%7D%28x_%7B2%7D%29%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%5C%5C%0A%26V_M%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B1%7D%28x_%7B1%7D%29%5E2f_%7B2%7D%28x_%7B2%7D%29%5E2%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29%5E2%20dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D.%0A%5Cend%7Balign%2A%7D%0A "
-\begin{align*}
-&\text{EQMI}^*(X_{1}, X_{2}, \ldots, X_{p}) = \frac{V_J -2V_C + V_M}{V_J + V_M}\\
-&\text{EQMI}(X_{1}, X_{2}, \ldots, X_{p}) = V_J -2V_C + V_M\\
-&\text{CSQMI}(X_{1}, X_{2}, \ldots, X_{p}) = \log(V_J) -2\log(V_C) + \log(V_M)\\
-&V_J = \int \int \ldots \int f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})^2dx_{1}dx_{2} \ldots dx_{p} \\
-&V_C = \int \int \ldots \int f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})f_{1}(x_{1})f_{2}(x_{2}) \ldots f_{p}(x_{p})dx_{1}dx_{2} \ldots dx_{p}\\
-&V_M = \int \int \ldots \int f_{1}(x_{1})^2f_{2}(x_{2})^2 \ldots f_{p}(x_{p})^2 dx_{1}dx_{2} \ldots dx_{p}.
-\end{align*}
-")
+![alt text here](Formulas.png)
 
 ![f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})](http://chart.apis.google.com/chart?cht=tx&chl=f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29 "f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})")
 is the joint PDF and

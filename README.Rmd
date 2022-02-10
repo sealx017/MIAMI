@@ -3,7 +3,7 @@ title: "MIAMI"
 author: Souvik Seal and Debashis Ghosh
 output: 
  github_document: 
-  pandoc_args: "--webtex=http://chart.apis.google.com/chart?cht=tx&chl="
+  pandoc_args: --webtex=http://chart.apis.google.com/chart?cht=tx&chl=
 bibliography: ref.bib
 ---
 
@@ -167,14 +167,6 @@ f\) Silverman, B. W. (2018). Density estimation for statistics and data analysis
 
 Here, we show the mathematical definitions of the three different MI-based measures, EQMI*, EQMI and CSQMI, implemented in this package. 
 
-$$
-\begin{align*}
-&\text{EQMI}^*(X_{1}, X_{2}, \ldots, X_{p}) = \frac{V_J -2V_C + V_M}{V_J + V_M}\\
-&\text{EQMI}(X_{1}, X_{2}, \ldots, X_{p}) = V_J -2V_C + V_M\\
-&\text{CSQMI}(X_{1}, X_{2}, \ldots, X_{p}) = \log(V_J) -2\log(V_C) + \log(V_M)\\
-&V_J = \int \int \ldots \int f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})^2dx_{1}dx_{2} \ldots dx_{p} \\
-&V_C = \int \int \ldots \int f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})f_{1}(x_{1})f_{2}(x_{2}) \ldots f_{p}(x_{p})dx_{1}dx_{2} \ldots dx_{p}\\
-&V_M = \int \int \ldots \int f_{1}(x_{1})^2f_{2}(x_{2})^2 \ldots f_{p}(x_{p})^2 dx_{1}dx_{2} \ldots dx_{p}.
-\end{align*}
-$$
+![alt text here](Formulas.png)
+
 $f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})$ is the joint PDF and $f_{1}(x_{1}), f_{2}(x_{2}), \ldots f_{p}(x_{p})$ are the marginal PDFs of the $p$ variables. The details of the efficient algorithm used for estimating $V_J, V_C$ and $V_M$ can be found in the manuscript, "MIAMI: Mutual Information-based Analysis of Multiplex Imaging data". 
