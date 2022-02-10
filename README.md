@@ -3,7 +3,7 @@ MIAMI
 Souvik Seal and Debashis Ghosh
 
 This is an R package implementing the proposed method from the paper,
-“MIAMI: Mutual Information-based Analysis of Multiplex Imaging data.”
+“MIAMI: Mutual Information-based Analysis of Multiplex Imaging data”.
 The package provides a thorough pipeline for performing marker
 co-expression analysis of multiplex imaging data, such as Vectra (Huang
 et. al. 2013) and MIBI data (Keren et. al. 2019). The package also
@@ -24,10 +24,10 @@ require(MIAMI)
 ## Loading the example datasets
 
 Next, we import the example files named, “Marker_Data.csv” and
-“Clinical_Data.csv.” The first one has expression data of five markers
-(![p](https://latex.codecogs.com/png.latex?p "p") = 5), HLA-DR, CD45RO,
-H3K27me3, H3K9ac and HLA_Class_1 for 39 subjects. The second one has
-data of two clinical outcomes, recurrence and survival and one
+“Clinical_Data.csv”. The first one has expression data of five markers
+(![p](http://chart.apis.google.com/chart?cht=tx&chl=p "p") = 5), HLA-DR,
+CD45RO, H3K27me3, H3K9ac and HLA_Class_1 for 39 subjects. The second one
+has data of two clinical outcomes, recurrence and survival and one
 covariate, Age for the same set of subjects. Both of these files are
 extracted from the triple-negative breast cancer MIBI data first
 published in Keren et. al. 2018. The files have a common column named
@@ -78,9 +78,9 @@ knitr::kable(head(clinical_data), format="markdown")
     computed in a step-wise fashion. It means that along with the EQMI\*
     between the full set of markers, one can easily extract the EQMI\*
     between several smaller sets of markers. For example, with
-    ![p](https://latex.codecogs.com/png.latex?p "p") = 5 markers, (1, 2,
-    3, 4, 5), the EQMI\* between all the following sets of markers can
-    be extracted in a single estimation procedure,
+    ![p](http://chart.apis.google.com/chart?cht=tx&chl=p "p") = 5
+    markers, (1, 2, 3, 4, 5), the EQMI\* between all the following sets
+    of markers can be extracted in a single estimation procedure,
 
     -   (1, 2), denoted by EQMI\*\_12
     -   (1, 2, 3), denoted by EQMI\*\_123
@@ -91,8 +91,8 @@ knitr::kable(head(clinical_data), format="markdown")
     each of the r.v.’s. the default option, bandwidth = “Hpi” uses the
     multivariate plug-in bandwidth matrix described in Wand, M. P., &
     Jones, M. C. (1994). However, in larger datasets (especially, for
-    large ![p](https://latex.codecogs.com/png.latex?p "p")) for faster
-    computation, bandwidth = “Ind,” which chooses bandwidth by
+    large ![p](http://chart.apis.google.com/chart?cht=tx&chl=p "p")) for
+    faster computation, bandwidth = “Ind”, which chooses bandwidth by
     Silverman’s rule (Silverman, B.W. (2018)) for every r.v., can be
     used.
 
@@ -152,15 +152,16 @@ knitr::kable(head(EQMI_vector), format="markdown")
 
 Using the vector of estimated EQMI\* of all the subjects, we perform
 association analysis with two clinical outcomes, survival and
-recurrence. We have both the survival and recurrence times and the
-respective censoring indicators (= 0 for an event) as the columns of the
-matrix named clinical_data. We have one single covariate, Age in the
-same matrix. Below, we create a matrix named surv_dat with all the
-subject IDs and their survival outcomes, and another matrix named
-covariates with the subject IDs and available covariates which, in this
-case, is just Age. We then use the function Cox_PH to fit the
-proportional hazard (PH) model outputting a table of p-values. To add
-higher order terms in the PH model, change degree to \> 1.
+recurrence. We have the outcomes, the time to death and the time to
+recurrence and the respective censoring indicators (= 0 for an event) as
+the columns of the matrix named clinical_data. We have one single
+covariate, Age in the same matrix. Below, we create a matrix named
+surv_dat with all the subject IDs and their survival outcomes, and
+another matrix named covariates with the subject IDs and available
+covariates which, in this case, is just Age. We then use the function
+Cox_PH to fit the proportional hazard (PH) model outputting a table of
+p-values. To add higher order terms in the PH model, change degree to \>
+1.
 
 ``` r
 surv_dat = clinical_data[,c(1,4:5)]
@@ -229,11 +230,11 @@ f_12. The default number of grids is, ngrids = 512 and the bandwidth
 matrix used is the multivariate plug-in bandwidth matrix described in
 Wand, M. P., & Jones, M. C. (1994). It may be easy to interpret the
 estimated density focusing only on the smaller values of
-![X_1](https://latex.codecogs.com/png.latex?X_1 "X_1") and
-![X_2](https://latex.codecogs.com/png.latex?X_2 "X_2") since both the
-r.v.’s usually have most of the values close to 0. Hence, we use two
-thresholds (q1, q2) to display the estimated density only between 70%
-quantiles of both the r.v.’s.
+![X_1](http://chart.apis.google.com/chart?cht=tx&chl=X_1 "X_1") and
+![X_2](http://chart.apis.google.com/chart?cht=tx&chl=X_2 "X_2") since
+both the r.v.’s usually have most of the values close to 0. Hence, we
+use two thresholds (q1, q2) to display the estimated density only
+between 70% quantiles of both the r.v.’s.
 
 ``` r
 
@@ -286,7 +287,7 @@ MI-based measures, EQMI\*, EQMI and CSQMI, implemented in this package.
 &V_C = \\int \\int \\ldots \\int f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})f\_{1}(x\_{1})f\_{2}(x\_{2}) \\ldots f\_{p}(x\_{p})dx\_{1}dx\_{2} \\ldots dx\_{p}\\\\
 &V_M = \\int \\int \\ldots \\int f\_{1}(x\_{1})^2f\_{2}(x\_{2})^2 \\ldots f\_{p}(x\_{p})^2 dx\_{1}dx\_{2} \\ldots dx\_{p}.
 \\end{align\*}
-](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign%2A%7D%0A%26%5Ctext%7BEQMI%7D%5E%2A%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Cfrac%7BV_J%20-2V_C%20%2B%20V_M%7D%7BV_J%20%2B%20V_M%7D%5C%5C%0A%26%5Ctext%7BEQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20V_J%20-2V_C%20%2B%20V_M%5C%5C%0A%26%5Ctext%7BCSQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Clog%28V_J%29%20-2%5Clog%28V_C%29%20%2B%20%5Clog%28V_M%29%5C%5C%0A%26V_J%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29%5E2dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%20%5C%5C%0A%26V_C%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29f_%7B1%7D%28x_%7B1%7D%29f_%7B2%7D%28x_%7B2%7D%29%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%5C%5C%0A%26V_M%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B1%7D%28x_%7B1%7D%29%5E2f_%7B2%7D%28x_%7B2%7D%29%5E2%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29%5E2%20dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D.%0A%5Cend%7Balign%2A%7D%0A "
+](http://chart.apis.google.com/chart?cht=tx&chl=%0A%5Cbegin%7Balign%2A%7D%0A%26%5Ctext%7BEQMI%7D%5E%2A%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Cfrac%7BV_J%20-2V_C%20%2B%20V_M%7D%7BV_J%20%2B%20V_M%7D%5C%5C%0A%26%5Ctext%7BEQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20V_J%20-2V_C%20%2B%20V_M%5C%5C%0A%26%5Ctext%7BCSQMI%7D%28X_%7B1%7D%2C%20X_%7B2%7D%2C%20%5Cldots%2C%20X_%7Bp%7D%29%20%3D%20%5Clog%28V_J%29%20-2%5Clog%28V_C%29%20%2B%20%5Clog%28V_M%29%5C%5C%0A%26V_J%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29%5E2dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%20%5C%5C%0A%26V_C%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29f_%7B1%7D%28x_%7B1%7D%29f_%7B2%7D%28x_%7B2%7D%29%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D%5C%5C%0A%26V_M%20%3D%20%5Cint%20%5Cint%20%5Cldots%20%5Cint%20f_%7B1%7D%28x_%7B1%7D%29%5E2f_%7B2%7D%28x_%7B2%7D%29%5E2%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29%5E2%20dx_%7B1%7Ddx_%7B2%7D%20%5Cldots%20dx_%7Bp%7D.%0A%5Cend%7Balign%2A%7D%0A "
 \begin{align*}
 &\text{EQMI}^*(X_{1}, X_{2}, \ldots, X_{p}) = \frac{V_J -2V_C + V_M}{V_J + V_M}\\
 &\text{EQMI}(X_{1}, X_{2}, \ldots, X_{p}) = V_J -2V_C + V_M\\
@@ -297,13 +298,13 @@ MI-based measures, EQMI\*, EQMI and CSQMI, implemented in this package.
 \end{align*}
 ")
 
-![f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})](https://latex.codecogs.com/png.latex?f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29 "f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})")
+![f\_{12 \\ldots p}(x\_{1}, x\_{2}, \\ldots , x\_{p})](http://chart.apis.google.com/chart?cht=tx&chl=f_%7B12%20%5Cldots%20p%7D%28x_%7B1%7D%2C%20x_%7B2%7D%2C%20%5Cldots%20%2C%20x_%7Bp%7D%29 "f_{12 \ldots p}(x_{1}, x_{2}, \ldots , x_{p})")
 is the joint PDF and
-![f\_{1}(x\_{1}), f\_{2}(x\_{2}), \\ldots f\_{p}(x\_{p})](https://latex.codecogs.com/png.latex?f_%7B1%7D%28x_%7B1%7D%29%2C%20f_%7B2%7D%28x_%7B2%7D%29%2C%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29 "f_{1}(x_{1}), f_{2}(x_{2}), \ldots f_{p}(x_{p})")
+![f\_{1}(x\_{1}), f\_{2}(x\_{2}), \\ldots f\_{p}(x\_{p})](http://chart.apis.google.com/chart?cht=tx&chl=f_%7B1%7D%28x_%7B1%7D%29%2C%20f_%7B2%7D%28x_%7B2%7D%29%2C%20%5Cldots%20f_%7Bp%7D%28x_%7Bp%7D%29 "f_{1}(x_{1}), f_{2}(x_{2}), \ldots f_{p}(x_{p})")
 are the marginal PDFs of the
-![p](https://latex.codecogs.com/png.latex?p "p") variables. The details
-of the efficient algorithm used for estimating
-![V_J, V_C](https://latex.codecogs.com/png.latex?V_J%2C%20V_C "V_J, V_C")
-and ![V_M](https://latex.codecogs.com/png.latex?V_M "V_M") can be found
-in the manuscript, “MIAMI: Mutual Information-based Analysis of
-Multiplex Imaging data.”
+![p](http://chart.apis.google.com/chart?cht=tx&chl=p "p") variables. The
+details of the efficient algorithm used for estimating
+![V_J, V_C](http://chart.apis.google.com/chart?cht=tx&chl=V_J%2C%20V_C "V_J, V_C")
+and ![V_M](http://chart.apis.google.com/chart?cht=tx&chl=V_M "V_M") can
+be found in the manuscript, “MIAMI: Mutual Information-based Analysis of
+Multiplex Imaging data”.

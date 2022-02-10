@@ -3,7 +3,7 @@ title: "MIAMI"
 author: Souvik Seal and Debashis Ghosh
 output: 
  github_document: 
-  pandoc_args: "--webtex"
+  pandoc_args: "--webtex=http://chart.apis.google.com/chart?cht=tx&chl="
 bibliography: ref.bib
 ---
 
@@ -90,7 +90,7 @@ knitr::kable(head(EQMI_vector), format="markdown")
 
 ### Association testing with survival outcome
 
-Using the vector of estimated EQMI\* of all the subjects, we perform association analysis with two clinical outcomes, survival and recurrence. We have both the survival and recurrence times and the respective censoring indicators (= 0 for an event) as the columns of the matrix named clinical_data. We have one single covariate, Age in the same matrix. Below, we create a matrix named surv_dat with all the subject IDs and their survival outcomes, and another matrix named covariates with the subject IDs and available covariates which, in this case, is just Age. We then use the function Cox_PH to fit the proportional hazard (PH) model outputting a table of p-values. To add higher order terms in the PH model, change degree to > 1. 
+Using the vector of estimated EQMI\* of all the subjects, we perform association analysis with two clinical outcomes, survival and recurrence. We have the outcomes, the time to death and the time to recurrence and the respective censoring indicators (= 0 for an event) as the columns of the matrix named clinical_data. We have one single covariate, Age in the same matrix. Below, we create a matrix named surv_dat with all the subject IDs and their survival outcomes, and another matrix named covariates with the subject IDs and available covariates which, in this case, is just Age. We then use the function Cox_PH to fit the proportional hazard (PH) model outputting a table of p-values. To add higher order terms in the PH model, change degree to > 1. 
 
 ```{r CoxPh model studying association between EQMI and survival}
 
